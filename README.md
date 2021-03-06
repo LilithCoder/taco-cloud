@@ -1,5 +1,24 @@
 ## taco-cloud
-一个基于Spring, Spring MVC的墨西哥卷饼外卖平台，
+一个基于Spring, Spring MVC的墨西哥卷饼外卖平台
+
+## 项目启动
+如果没有maven环境，请先配置[maven](https://www.jianshu.com/p/191685a33786)
+
+ps: (如果使用的是zsh，那要正确地在 ~/.zshrc 中 export maven 环境变量以及Java JDK 环境变量)
+
+或使用Homebrew直接安装maven
+
+```aidl
+brew install maven
+```
+
+安装后命令行输入：
+```aidl
+cd taco-cloud
+mvn spring-boot:run
+```
+
+接下来访问```localhost:8080```
 
 ## 项目流程概述
 
