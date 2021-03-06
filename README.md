@@ -9,13 +9,13 @@ ps: (如果使用的是zsh，需要正确地在 ~/.zshrc 中 export maven 环境
 或使用Homebrew直接安装maven
 
 ```aidl
-brew install maven
+$ brew install maven
 ```
 
 安装后命令行输入：
 ```aidl
-cd taco-cloud
-mvn spring-boot:run
+$ cd taco-cloud
+$ mvn spring-boot:run
 ```
 
 接下来访问 ```localhost:8080```
