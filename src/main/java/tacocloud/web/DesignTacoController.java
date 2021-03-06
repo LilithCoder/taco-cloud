@@ -3,6 +3,7 @@ package tacocloud.web;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 import tacocloud.Ingredient;
 import tacocloud.Ingredient.Type;
 import tacocloud.Taco;
+
+import javax.validation.Valid;
 
 @Slf4j
 @Controller
@@ -72,9 +75,22 @@ public class DesignTacoController {
      * 返回的值指示将显示给用户的视图
      * processDesign() 返回的值的前缀是 “redirect:”
      * 用户的浏览器应该被重定向到相对路径 /order/current
+     *
+     * 在表单绑定时执行验证
+     * @Valid 注释告诉 Spring MVC 在提交的 Taco 对象绑定到提交的表单数据之后，
+     * 以及调用 processDesign() 方法之前，对提交的 Taco 对象执行验证
+     * 如果存在任何验证错误，这些错误的详细信息将在传递到 processDesign() 的错误对象中捕获。
      * */
     @PostMapping
-    public String processDesign(Taco design) {
+    public String processDesign(@Valid Taco design, Errors errors) {
+
+        /**
+         * 有验证错误时，返回 “design” 视图名，以便重新显示表单。
+         * */
+        if (errors.hasErrors()) {
+            return "design";
+        }
+
         log.info("Processing design: " + design);
         return "redirect:/orders/current";
     }
