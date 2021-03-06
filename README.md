@@ -18,7 +18,7 @@ cd taco-cloud
 mvn spring-boot:run
 ```
 
-接下来访问 [localhost:8080](localhost:8080)
+接下来访问 ```localhost:8080```
 
 ## 项目流程概述
 
