@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Arrays;
@@ -19,6 +20,12 @@ import tacocloud.Taco;
 @RequestMapping("/design")
 public class DesignTacoController {
 
+    /**
+     * 将请求和Ingredient数据提交给视图模板，以 HTML 的形式呈现并发送给请求的 web 浏览器
+     * 根据原料类型过滤该列表。然后将成分类型列表作为属性添加到传递到 showDesignForm() 的 Model 对象
+     * Model 是一个对象，它在控制器和负责呈现数据的视图之间传输数据
+     * 最后，放置在 Model 类属性中的数据被复制到 servlet 响应属性中，视图可以在其中找到它们
+     */
     @GetMapping // 处理请求路径为 /design 的 HTTP GET 请求
     public String showDesignForm(Model model) {
 
@@ -36,10 +43,6 @@ public class DesignTacoController {
                 new Ingredient("SRCR", "Sour Cream", Type.SAUCE)
         );
 
-        // 将请求和Ingredient数据提交给视图模板，以 HTML 的形式呈现并发送给请求的 web 浏览器
-        // 根据原料类型过滤该列表。然后将成分类型列表作为属性添加到传递到 showDesignForm() 的 Model 对象。
-        // Model 是一个对象，它在控制器和负责呈现数据的视图之间传输数据。
-        // 最后，放置在 Model 类属性中的数据被复制到 servlet 响应属性中，视图可以在其中找到它们。
         Type[] types = Ingredient.Type.values();
         for (Type type: types) {
             model.addAttribute(type.toString().toLowerCase(),
@@ -56,5 +59,23 @@ public class DesignTacoController {
         return ingredients.stream()
                 .filter(x -> x.getType().equals(type))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 提交表单时，表单中的字段被绑定到 Taco 对象的属性
+     * 该对象作为参数传递给 processDesign()
+     * processDesign() 方法可以对 Taco 对象做任何它想做的事情
+     *
+     * 表单中的这些字段直接对应于 Taco 类的 ingredients 和 name 属性
+     *
+     * processDesign() 通过返回一个 String 结束
+     * 返回的值指示将显示给用户的视图
+     * processDesign() 返回的值的前缀是 “redirect:”
+     * 用户的浏览器应该被重定向到相对路径 /order/current
+     * */
+    @PostMapping
+    public String processDesign(Taco design) {
+        log.info("Processing design: " + design);
+        return "redirect:/orders/current";
     }
 }
