@@ -24,7 +24,7 @@ $ mvn spring-boot:run
 
 [待完善]
 
-## 第1-2章阶段的项目流程图
+## 第1-2章阶段
 
 ![](pic/flow_chart_v1.png)
 
@@ -65,3 +65,21 @@ $ mvn spring-boot:run
 - 视图控制器可以用来处理不需要模型数据或处理的 HTTP GET 请求。
 
 - 除了 Thymeleaf，Spring 还支持多种视图选项，包括 FreeMarker、Groovy Templates 和 Mustache
+
+## 第3-?章阶段
+
+### 为域适配持久化:
+
+- 在将对象持久化到数据库时，通常最好有一个惟一标识对象的字段
+
+- 使用 Lombok (@Data注释) 在运行时自动生成访问器方法，所以除了声明 id 和 createdAt 属性外，不需要做任何事情。它们将在运行时根据需要生成适当的 getter 和 setter 方法。
+
+### 定义 JDBC 存储库
+
+Ingredient repository 需要执行以下操作：
+
+- 查询所有的 Ingredient 使之变成一个 Ingredient 的集合对象
+
+- 通过它的 id 查询单个 Ingredient
+
+- 保存一个 Ingredient 对象
