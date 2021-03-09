@@ -1,6 +1,7 @@
 package tacocloud.web;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 import tacocloud.Ingredient;
 import tacocloud.Ingredient.Type;
 import tacocloud.Taco;
+import tacocloud.data.IngredientRepository;
 
 import javax.validation.Valid;
 
@@ -22,6 +25,18 @@ import javax.validation.Valid;
 @Controller
 @RequestMapping("/design")
 public class DesignTacoController {
+
+    /**
+     * 完成了 JdbcIngredientRepository后，
+     * 将其注入到 DesignTacoController 中，
+     * 并使用它来提供一个 Ingredient 对象列表
+     * */
+    private final IngredientRepository ingredientRepo;
+
+    @Autowired
+    public DesignTacoController(IngredientRepository ingredientRepo) {
+        this.ingredientRepo = ingredientRepo;
+    }
 
     /**
      * 将请求和Ingredient数据提交给视图模板，以 HTML 的形式呈现并发送给请求的 web 浏览器
@@ -32,20 +47,27 @@ public class DesignTacoController {
     @GetMapping // 处理请求路径为 /design 的 HTTP GET 请求
     public String showDesignForm(Model model) {
 
-        // 构建Ingredient列表
-        List<Ingredient> ingredients = Arrays.asList(
-                new Ingredient("FLTO", "Flour Tortilla", Type.WRAP),
-                new Ingredient("COTO", "Corn Tortilla", Type.WRAP),
-                new Ingredient("GRBF", "Ground Beef", Type.PROTEIN),
-                new Ingredient("CARN", "Carnitas", Type.PROTEIN),
-                new Ingredient("TMTO", "Diced Tomatoes", Type.VEGGIES),
-                new Ingredient("LETC", "Lettuce", Type.VEGGIES),
-                new Ingredient("CHED", "Cheddar", Type.CHEESE),
-                new Ingredient("JACK", "Monterrey Jack", Type.CHEESE),
-                new Ingredient("SLSA", "Salsa", Type.SAUCE),
-                new Ingredient("SRCR", "Sour Cream", Type.SAUCE)
-        );
+//        // 构建Ingredient列表
+//        List<Ingredient> ingredients = Arrays.asList(
+//                new Ingredient("FLTO", "Flour Tortilla", Type.WRAP),
+//                new Ingredient("COTO", "Corn Tortilla", Type.WRAP),
+//                new Ingredient("GRBF", "Ground Beef", Type.PROTEIN),
+//                new Ingredient("CARN", "Carnitas", Type.PROTEIN),
+//                new Ingredient("TMTO", "Diced Tomatoes", Type.VEGGIES),
+//                new Ingredient("LETC", "Lettuce", Type.VEGGIES),
+//                new Ingredient("CHED", "Cheddar", Type.CHEESE),
+//                new Ingredient("JACK", "Monterrey Jack", Type.CHEESE),
+//                new Ingredient("SLSA", "Salsa", Type.SAUCE),
+//                new Ingredient("SRCR", "Sour Cream", Type.SAUCE)
+//        );
 
+        /**
+         * 调用了注入的 IngredientRepository 的 findAll() 方法。
+         * findAll() 方法从数据库中提取所有 Ingredient，
+         * 然后将它们对应到到模型的不同类型中
+         * */
+        List<Ingredient> ingredients = new ArrayList<>();
+        ingredientRepo.findAll().forEach(i -> ingredients.add(i));
         Type[] types = Ingredient.Type.values();
         for (Type type: types) {
             model.addAttribute(type.toString().toLowerCase(),

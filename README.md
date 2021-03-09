@@ -83,3 +83,7 @@ Ingredient repository 需要执行以下操作：
 - 通过它的 id 查询单个 Ingredient
 
 - 保存一个 Ingredient 对象
+
+完成了 JdbcIngredientRepository后，现在可以将其注入到 DesignTacoController 中，并使用它来提供一个 Ingredient 对象列表，而不是使用硬编码的值
+
+showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository 的 findAll() 方法。findAll() 方法从数据库中提取所有 Ingredient，然后将它们对应到到模型的不同类型中
