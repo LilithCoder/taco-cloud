@@ -95,3 +95,19 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
 - 如果有一个名为 schema.sql 的文件。在应用程序的类路径根目录下执行 sql，然后在应用程序启动时对数据库执行该文件中的 SQL。写入一个名为 schema.sql 的文件中，然后放在项目的 src/main/resources 文件夹下。
 
 - 用一些 Ingredient 数据来预加载数据库。幸运的是，Spring Boot 还将执行一个名为 data.sql 的文件，这个文件位于根路径下。因此，可以使用 src/main/resources/data.sql 中的下面程序清单中的 insert 语句来加载包含 Ingredient 数据的数据库。
+
+### 插入数据
+
+- JdbcIngredientRepository 中的 save() 方法使用 JdbcTemplate 的 update() 方法将 Ingredient 对象保存到数据库中
+
+- dbcTemplate 保存数据的两种方法包括：
+
+    - 直接使用 update() 方法
+    
+    - 使用 SimpleJdbcInsert 包装类
+    
+- 保存一个 Taco 设计需要将与该 Taco 关联的 Ingredient 保存到 Taco_Ingredient 表中。同样，保存 Order 也需要将与 Order 关联的 Taco 保存到 Taco_Order_Tacos 表中。这使得保存 Taco 和 Order 比 保存 Ingredient 更有挑战性。
+
+    - 这里用了一个不同的 update() 方法，通过使用 PreparedStatementCreator，可以调用 update()，传入 PreparedStatementCreator 和 KeyHolder，返回 Taco id，在 Taco 表中插入一行时，需要知道数据库生成的 id，以便在每个 Ingredient 中引用它。接着插入了 Taco_Ingredient 表。详细实现见[JdbcTacoRepository.java](src/main/java/tacocloud/data/JdbcTacoRepository.java)
+   
+- 将 TacoRepository 注入到 DesignTacoController

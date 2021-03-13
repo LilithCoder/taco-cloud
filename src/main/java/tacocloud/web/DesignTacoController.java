@@ -1,13 +1,12 @@
 package tacocloud.web;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tools.ant.taskdefs.condition.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,26 +15,30 @@ import java.util.stream.Collectors;
 
 import tacocloud.Ingredient;
 import tacocloud.Ingredient.Type;
+import tacocloud.Order;
 import tacocloud.Taco;
 import tacocloud.data.IngredientRepository;
+import tacocloud.data.TacoRepository;
 
 import javax.validation.Valid;
 
 @Slf4j
 @Controller
 @RequestMapping("/design")
+@SessionAttributes("order") // 类级别的 @SessionAttributes 注解指定了任何模型对象，比如应该保存在会话中的 order 属性，并且可以跨多个请求使用
 public class DesignTacoController {
-
     /**
      * 完成了 JdbcIngredientRepository后，
      * 将其注入到 DesignTacoController 中，
      * 并使用它来提供一个 Ingredient 对象列表
      * */
     private final IngredientRepository ingredientRepo;
+    private TacoRepository designRepo;
 
     @Autowired
-    public DesignTacoController(IngredientRepository ingredientRepo) {
+    public DesignTacoController(IngredientRepository ingredientRepo, TacoRepository designRepo) {
         this.ingredientRepo = ingredientRepo;
+        this.designRepo = designRepo;
     }
 
     /**
@@ -46,7 +49,6 @@ public class DesignTacoController {
      */
     @GetMapping // 处理请求路径为 /design 的 HTTP GET 请求
     public String showDesignForm(Model model) {
-
 //        // 构建Ingredient列表
 //        List<Ingredient> ingredients = Arrays.asList(
 //                new Ingredient("FLTO", "Flour Tortilla", Type.WRAP),
@@ -60,7 +62,6 @@ public class DesignTacoController {
 //                new Ingredient("SLSA", "Salsa", Type.SAUCE),
 //                new Ingredient("SRCR", "Sour Cream", Type.SAUCE)
 //        );
-
         /**
          * 调用了注入的 IngredientRepository 的 findAll() 方法。
          * findAll() 方法从数据库中提取所有 Ingredient，
@@ -74,16 +75,31 @@ public class DesignTacoController {
                     filterByType(ingredients, type));
         }
         model.addAttribute("design", new Taco());
-
         // showDesignForm() 方法最后返回 “design”，这是将用于向浏览器呈现 Model 的视图的逻辑名称。
         return "design";
     }
 
     private List<Ingredient> filterByType(List<Ingredient> ingredients, Type type) {
         // 元素流 -> 筛选 -> 聚合
-        return ingredients.stream()
+        return ingredients
+                .stream()
                 .filter(x -> x.getType().equals(type))
                 .collect(Collectors.toList());
+    }
+
+
+    /**
+     * @ModelAttribute 确保在模型中能够创建 Order 对象
+     * 与 session 中的 Taco 对象不同，这里需要在多个请求间显示订单，因此可以创建多个 Taco 并将它们添加到订单中
+     * */
+    @ModelAttribute(name = "order")
+    public Order order() {
+        return new Order();
+    }
+
+    @ModelAttribute(name = "taco")
+    public Taco taco() {
+        return new Taco();
     }
 
     /**
@@ -102,18 +118,27 @@ public class DesignTacoController {
      * @Valid 注释告诉 Spring MVC 在提交的 Taco 对象绑定到提交的表单数据之后，
      * 以及调用 processDesign() 方法之前，对提交的 Taco 对象执行验证
      * 如果存在任何验证错误，这些错误的详细信息将在传递到 processDesign() 的错误对象中捕获。
+     *
+     * Order 参数使用 @ModelAttribute 进行注解，以指示其值应该来自模型，而 Spring MVC 不应该试图给它绑定请求参数
      * */
     @PostMapping
-    public String processDesign(@Valid Taco design, Errors errors) {
-
+    public String processDesign(@Valid Taco design, Errors errors, @ModelAttribute Order order) {
         /**
          * 有验证错误时，返回 “design” 视图名，以便重新显示表单。
          * */
         if (errors.hasErrors()) {
             return "design";
         }
-
         log.info("Processing design: " + design);
+        /**
+         * 使用注入的 TacoRepository 来保存 Taco
+         * */
+        Taco saved = designRepo.save(design);
+        /**
+         * 将 Taco 对象添加到保存于 session 中 Order 对象中
+         * Order 对象仍然保留在 session 中，直到用户完成并提交 Order 表单才会保存到数据库中
+         * */
+        order.addDesign(saved);
         return "redirect:/orders/current";
     }
 }

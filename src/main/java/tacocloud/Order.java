@@ -6,7 +6,9 @@ import org.hibernate.validator.constraints.CreditCardNumber;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data // 该关键字帮域类自动补全api
 public class Order {
@@ -39,4 +41,10 @@ public class Order {
 
     @Digits(integer=3, fraction=0, message="Invalid CVV") // 声明验证规则: 确保值恰好包含三个数字
     private String ccCVV;
+
+    private List<Taco> tacos = new ArrayList<>();
+
+    public void addDesign(Taco design) {
+        this.tacos.add(design);
+    }
 }

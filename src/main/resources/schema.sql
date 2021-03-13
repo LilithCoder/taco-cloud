@@ -18,10 +18,10 @@ create table if not exists Taco (
 --将 Taco 映射到该 Taco 的 Ingredient
 create table if not exists Taco_Ingredients (
     taco bigint not null,
-    ingredient varchar(4) not null
+    ingredient varchar(4) not null,
+    foreign key (taco) references Taco(id),
+    foreign key (ingredient) references Ingredient(id)
 );
-alter table Taco_Ingredients add foreign key (taco) references Taco(id);
-alter table Taco_Ingredients add foreign key (ingredient) references Ingredient(id);
 
 --保存着重要的订单细节
 create table if not exists Taco_Order (
@@ -41,8 +41,7 @@ create table if not exists Taco_Order (
 --将 Order 映射到 Order 中的Tacos
 create table if not exists Taco_Order_Tacos (
     tacoOrder bigint not null,
-    tacoOrder bigint not null
+    taco bigint not null,
+    foreign key (tacoOrder) references Taco_Order(id),
+    foreign key (taco) references Taco(id)
 );
-​
-alter table Taco_Order_Tacos add foreign key (tacoOrder) references Taco_Order(id);
-alter table Taco_Order_Tacos add foreign key (taco) references Taco(id);

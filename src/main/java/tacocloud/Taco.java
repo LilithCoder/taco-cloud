@@ -23,5 +23,5 @@ public class Taco {
     private String name;
 
     @Size(min = 1, message = "You must choose at least 1 ingredient") // 声明验证规则, 要验证的类声明验证规则
-    private List<String> ingredients;
+    private List<Ingredient> ingredients;
 }
