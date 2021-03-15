@@ -102,12 +102,16 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
 
 - dbcTemplate 保存数据的两种方法包括：
 
-    - 直接使用 update() 方法
+    - 直接使用 update() 方法保存一个 Taco
     
-    - 使用 SimpleJdbcInsert 包装类
+        - 保存一个 Taco 设计需要将与该 Taco 关联的 Ingredient 保存到 Taco_Ingredient 表中。同样，保存 Order 也需要将与 Order 关联的 Taco 保存到 Taco_Order_Tacos 表中。这使得保存 Taco 和 Order 比 保存 Ingredient 更有挑战性。
+        
+        - 这里用了一个不同的 update() 方法，通过使用 PreparedStatementCreator，可以调用 update()，传入 PreparedStatementCreator 和 KeyHolder，返回 Taco id，在 Taco 表中插入一行时，需要知道数据库生成的 id，以便在每个 Ingredient 中引用它。接着插入了 Taco_Ingredient 表。详细实现见[JdbcTacoRepository.java](src/main/java/tacocloud/data/JdbcTacoRepository.java)
+           
+        - 将 TacoRepository 注入到 DesignTacoController
     
-- 保存一个 Taco 设计需要将与该 Taco 关联的 Ingredient 保存到 Taco_Ingredient 表中。同样，保存 Order 也需要将与 Order 关联的 Taco 保存到 Taco_Order_Tacos 表中。这使得保存 Taco 和 Order 比 保存 Ingredient 更有挑战性。
-
-    - 这里用了一个不同的 update() 方法，通过使用 PreparedStatementCreator，可以调用 update()，传入 PreparedStatementCreator 和 KeyHolder，返回 Taco id，在 Taco 表中插入一行时，需要知道数据库生成的 id，以便在每个 Ingredient 中引用它。接着插入了 Taco_Ingredient 表。详细实现见[JdbcTacoRepository.java](src/main/java/tacocloud/data/JdbcTacoRepository.java)
-   
-- 将 TacoRepository 注入到 DesignTacoController
+    - 使用 SimpleJdbcInsert 包装类保存一个 Order
+    
+        - 在保存订单方面，也存在类似的情况。不仅必须将订单数据保存到 Taco_Order 表中，还必须引用 Taco_Order_Tacos 表中的每个 taco
+        
+        - SimpleJdbcInsert 是一个包装了 JdbcTemplate 的对象，它让向表插入数据的操作变得更容易
