@@ -25,7 +25,7 @@ import javax.validation.Valid;
 @Slf4j
 @Controller
 @RequestMapping("/design")
-@SessionAttributes("order") // 类级别的 @SessionAttributes 注解指定了任何模型对象，比如应该保存在会话中的 order 属性，并且可以跨多个请求使用
+@SessionAttributes("order") // 类级别的 @SessionAttributes 注解指定了任何模型对象(比如应该保存在会话中的并且可以跨多个请求使用的 order 属性)
 public class DesignTacoController {
     /**
      * 完成了 JdbcIngredientRepository后，

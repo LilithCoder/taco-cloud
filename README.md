@@ -115,3 +115,13 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
         - 在保存订单方面，也存在类似的情况。不仅必须将订单数据保存到 Taco_Order 表中，还必须引用 Taco_Order_Tacos 表中的每个 taco
         
         - SimpleJdbcInsert 是一个包装了 JdbcTemplate 的对象，它让向表插入数据的操作变得更容易
+        
+            - 使用 Jackson 的 ObjectMapper 及其 convertValue() 方法将 Order 转换为 Map
+            
+            - 使用 executeAndReturnKey() 将订单信息保存到 Taco_Order 表中，并将数据库生成的 id 作为一个 Number 对象返回
+            
+            - 使用 execute() 存储 Taco 映对 Taco_Order 的信息到 Taco_Order_Tacos 表中 
+            
+- 这里有个需要注意的重点就是：
+
+    设计完 Taco 后，我们使用注入的 TacoRepository 来保存这个 Taco 对象到 Taco 表以及 Taco_Ingredient 表中，然后将 Taco 对象添加到保存于 session 中 Order 对象中，Order 对象仍然保留在 session 中，直到用户完成并提交 Order 表单才会保存到数据库中。其中 Order 对象在被提交保存到数据库前应该保存在会话中的并且可以跨多个请求使用。@SessionAttributes("order") 指定了这一点。
