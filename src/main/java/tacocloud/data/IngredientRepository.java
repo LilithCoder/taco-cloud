@@ -1,5 +1,6 @@
 package tacocloud.data;
 
+import org.springframework.data.repository.CrudRepository;
 import tacocloud.Ingredient;
 
 public interface IngredientRepository {
@@ -10,3 +11,7 @@ public interface IngredientRepository {
 
     Ingredient save(Ingredient ingredient); // 保存一个 Ingredient 对象
 }
+
+// 声明 JPA repository
+//public interface IngredientRepository extends CrudRepository<Ingredient, String> {
+//}

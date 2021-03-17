@@ -52,7 +52,7 @@ $ mvn spring-boot:run
 
 - 只将请求转发给视图的控制器
 
-### 学习总结(2021-03-07)
+## 学习总结(2021-03-07)
 
 - Spring 提供了一个强大的 web 框架，称为 Spring MVC，可以用于开发 Spring 应用程序的 web 前端。
 
@@ -66,7 +66,7 @@ $ mvn spring-boot:run
 
 - 除了 Thymeleaf，Spring 还支持多种视图选项，包括 FreeMarker、Groovy Templates 和 Mustache
 
-## 第3-?章阶段
+## 第3.1章 使用 JDBC 读写数据
 
 ![](pic/flow_chart_v2.png)
 
@@ -127,3 +127,41 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
 - 这里有个需要注意的重点就是：
 
     设计完 Taco 后，我们使用注入的 TacoRepository 来保存这个 Taco 对象到 Taco 表以及 Taco_Ingredient 表中，然后将 Taco 对象添加到保存于 session 中 Order 对象中，Order 对象仍然保留在 session 中，直到用户完成并提交 Order 表单才会保存到数据库中。其中 Order 对象在被提交保存到数据库前应该保存在会话中的并且可以跨多个请求使用。@SessionAttributes("order") 指定了这一点。
+    
+## 第3.2章 使用 Spring Data JPA 持久化数据
+
+### 注解域作为实体
+
+- 为了将其声明为 JPA 实体，必须使用 @Entity 注解
+
+- id 属性必须使用 @Id 进行注解
+
+- Taco 类因为依赖于数据库自动生成 id 值，所以还使用 @GeneratedValue 注解 id 属性，指定自动策略
+
+- 要声明 Taco 及其相关 Ingredient 列表之间的关系，可以使用 @ManyToMany 注解 ingredient 属性。一个 Taco 可以有很多 Ingredient，一个 Ingredient 可以是很多 Taco 的一部分。
+
+- Order 类级别有一个新的注解：@Table。这指定订单实体应该持久化到数据库中名为 Taco_Order 的表中。尽管可以在任何实体上使用这个注解，但它对于 Order 是必需的。没有它，JPA 将默认将实体持久化到一个名为 Order 的表中，但是 Order 在 SQL 中是一个保留字，会导致问题
+
+### 声明 JPA repository
+
+- 在存储库的 JDBC 版本中，显式地声明了希望 repository 提供的方法。但是使用 Spring Data，扩展 CrudRepository 接口
+
+- CrudRepository 为 CRUD（创建create、读取read、更新update、删除delete）操作声明了十几个方法
+
+- 当应用程序启动时，Spring Data JPA 会动态地自动生成一个实现。这意味着 repository 可以从一开始就使用。只需将它们注入到控制器中
+
+- CrudRepository 提供的方法非常适合用于实体的通用持久化
+
+### 自定义 JPA repository
+
+- 在生成 repository 实现时，Spring Data 检查存储库接口中的任何方法，解析方法名称，并尝试在持久化对象的上下文中理解方法的用途（在本例中是 Order）。本质上，Spring Data 定义了一种小型的领域特定语言（DSL），其中持久化细节用 repository 中的方法签名表示 
+
+## 学习总结(2021-03-18)
+
+- 使用 JDBC 读写数据，JdbcTemplate 大大简化了 JDBC 的工作。
+
+- dbcTemplate 用两种不同的 update() 方法来保存数据，当需要知道数据库生成的 id 时，可以同时使用 PreparedStatementCreator 和 KeyHolder。
+
+- dbcTemplate 还可以为了方便执行数据插入，使用 SimpleJdbcInsert。
+
+- Spring Data JPA 使得 JPA 持久化就像编写存储库接口一样简单。
