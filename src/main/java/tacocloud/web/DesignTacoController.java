@@ -72,7 +72,7 @@ public class DesignTacoController {
             model.addAttribute(type.toString().toLowerCase(),
                     filterByType(ingredients, type));
         }
-        model.addAttribute("design", new Taco());
+//        model.addAttribute("design", new Taco());
         // showDesignForm() 方法最后返回 “design”，这是将用于向浏览器呈现 Model 的视图的逻辑名称。
         return "design";
     }

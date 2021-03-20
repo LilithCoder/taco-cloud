@@ -10,69 +10,77 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Taco Cloud</title>
+    <!--Thymeleaf 的 @{} 操作符被用来产生一个上下文相关路径的静态工件-->
+    <!--Spring 启动应用程序中的静态内容是从类路径根目录的 /static 目录提供的。-->
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+</head>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Taco Cloud</title>
-        <!--Thymeleaf 的 @{} 操作符被用来产生一个上下文相关路径的静态工件-->
-        <!--Spring 启动应用程序中的静态内容是从类路径根目录的 /static 目录提供的。-->
-        <link rel="stylesheet" th:href="@{/styles.css}">
-    </head>
+<body>
+<h1>Design your taco!</h1>
+<img th:src="@{/images/TacoCloud.png}"/>
 
-    <body>
-        <h1>Design your taco! </h1>
-        <img th:src="@{/images/TacoCloud.png}">
-        <form method="POST" th:object="${design}">
-            <span class="validationError"
-                  th:if="${#fields.hasErrors('ingredients')}"
-                  th:errors="*{ingredients}">Ingredient Error</span>
-            <div class="grid">
-                <div class="ingredient-group" id="wraps">
-                    <!--Thymeleaf 还提供了另一个属性 th:each，它遍历元素集合，为集合中的每个项目呈现一次 HTML。-->
-                    <h3>Designate your wrap:</h3>
-                    <div th:each="ingredient : ${wrap}">
-                        <input type="checkbox" name="ingredients" th:value="${ingredient.id}" />
-                        <span th:text="${ingredient.name}">INGREDIENT</span> <!--th:text 是一个 Thymeleaf 的命名空间属性-->
-                    </div>
-                </div>
-                <div class="ingredient-group" id="proteins">
-                    <h3>Pick your protein:</h3>
-                    <div th:each="ingredient : ${protein}">
-                        <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
-                        <span th:text="${ingredient.name}">INGREDIENT</span><br/>
-                    </div>
-                </div>
-                <div class="ingredient-group" id="cheeses">
-                    <h3>Choose your cheese:</h3>
-                    <div th:each="ingredient : ${cheese}">
-                        <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
-                        <span th:text="${ingredient.name}">INGREDIENT</span><br/>
-                    </div>
-                </div>
-                <div class="ingredient-group" id="veggies">
-                    <h3>Determine your veggies:</h3>
-                    <div th:each="ingredient : ${veggies}">
-                        <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
-                        <span th:text="${ingredient.name}">INGREDIENT</span><br/>
-                    </div>
-                </div>
-                <div class="ingredient-group" id="sauces">
-                    <h3>Select your sauce:</h3>
-                    <div th:each="ingredient : ${sauce}">
-                        <input name="ingredients" type="checkbox" th:value="${ingredient.id}"/>
-                        <span th:text="${ingredient.name}">INGREDIENT</span><br/>
-                    </div>
-                </div>
+<form method="POST" th:object="${taco}">
+
+    <span class="validationError"
+          th:if="${#fields.hasErrors('ingredients')}"
+          th:errors="*{ingredients}">Ingredient Error</span>
+
+    <div class="grid">
+        <div class="ingredient-group" id="wraps">
+            <h3>Designate your wrap:</h3>
+            <div th:each="ingredient : ${wrap}"> <!--Thymeleaf 还提供了另一个属性 th:each，它遍历元素集合，为集合中的每个项目呈现一次 HTML。-->
+                <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
+                <span th:text="${ingredient.name}">INGREDIENT</span><br/> <!--th:text 是一个 Thymeleaf 的命名空间属性-->
             </div>
-            <div>
-                <h3>Name your taco creation:</h3>
-                <input type="text" th:field="*{name}" />
-                <span class="validationError"
-                     th:if="${#fields.hasErrors('name')}"
-                     th:errors="*{name}"></span>
-                <br/>
-                <button>Submit your taco</button>
+        </div>
+
+        <div class="ingredient-group" id="proteins">
+            <h3>Pick your protein:</h3>
+            <div th:each="ingredient : ${protein}">
+                <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
+                <span th:text="${ingredient.name}">INGREDIENT</span><br/>
             </div>
-        </form>
-    </body>
+        </div>
+
+        <div class="ingredient-group" id="cheeses">
+            <h3>Choose your cheese:</h3>
+            <div th:each="ingredient : ${cheese}">
+                <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
+                <span th:text="${ingredient.name}">INGREDIENT</span><br/>
+            </div>
+        </div>
+
+        <div class="ingredient-group" id="veggies">
+            <h3>Determine your veggies:</h3>
+            <div th:each="ingredient : ${veggies}">
+                <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
+                <span th:text="${ingredient.name}">INGREDIENT</span><br/>
+            </div>
+        </div>
+
+        <div class="ingredient-group" id="sauces">
+            <h3>Select your sauce:</h3>
+            <div th:each="ingredient : ${sauce}">
+                <input name="ingredients" type="checkbox" th:value="${ingredient.id}" />
+                <span th:text="${ingredient.name}">INGREDIENT</span><br/>
+            </div>
+        </div>
+    </div>
+
+    <div>
+
+
+        <h3>Name your taco creation:</h3>
+        <input type="text" th:field="*{name}"/>
+        <span class="validationError"
+              th:if="${#fields.hasErrors('name')}"
+              th:errors="*{name}">Name Error</span>
+        <br/>
+
+        <button>Submit your taco</button>
+    </div>
+</form>
+</body>
 </html>

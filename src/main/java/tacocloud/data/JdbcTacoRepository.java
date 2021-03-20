@@ -51,14 +51,19 @@ public class JdbcTacoRepository implements TacoRepository {
          * 2. 为它提供想要执行的 SQL，以及每个查询参数的类型
          * 3. 然后在该工厂上调用 newPreparedStatementCreator()，在查询参数中传递所需的值以生成 PreparedStatementCreator
          * */
-        PreparedStatementCreator psc = new PreparedStatementCreatorFactory(
+        PreparedStatementCreatorFactory preparedStatementCreatorFactory = new PreparedStatementCreatorFactory(
                 "insert into Taco (name, createdAt) values (?, ?)",
                 Types.VARCHAR, Types.TIMESTAMP
-        ).newPreparedStatementCreator(
-                Arrays.asList(
-                        taco.getName(),
-                        new Timestamp(taco.getCreatedAt().getTime())));
+        );
+        preparedStatementCreatorFactory.setReturnGeneratedKeys(true);
+
+        PreparedStatementCreator psc =
+                preparedStatementCreatorFactory.newPreparedStatementCreator(
+                        Arrays.asList(
+                                taco.getName(),
+                                new Timestamp(taco.getCreatedAt().getTime())));
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         /**
          * 这里是一个不同的 update() 方法
          * 保存 Ingredient 数据时使用的 update() 方法不能获得生成的 id
