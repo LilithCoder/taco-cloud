@@ -30,19 +30,19 @@ public class Order implements Serializable {
     private Date placedAt;
 
     @NotBlank(message = "Name is required") // 声明验证规则
-    private String name;
+    private String deliveryName;
 
     @NotBlank(message = "Street is required") // 声明验证规则
-    private String street;
+    private String deliveryStreet;
 
     @NotBlank(message = "City is required") // 声明验证规则
-    private String city;
+    private String deliveryCity;
 
     @NotBlank(message = "State is required") // 声明验证规则
-    private String state;
+    private String deliveryState;
 
     @NotBlank(message = "Zip is required") // 声明验证规则
-    private String zip;
+    private String deliveryZip;
 
     @CreditCardNumber(message = "Not a valid credit card number") // 声明验证规则: 有效信用卡号
     private String ccNumber;
