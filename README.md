@@ -130,6 +130,8 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
     
 ## 第3.2章 使用 Spring Data JPA 持久化数据
 
+![](pic/flow_chart_v3.png)
+
 ### 注解域作为实体
 
 - 为了将其声明为 JPA 实体，必须使用 @Entity 注解
@@ -148,6 +150,8 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
 
 - CrudRepository 为 CRUD（创建create、读取read、更新update、删除delete）操作声明了十几个方法
 
+- 有了三个 repository，可能认为需要为这三个 repository 编写实现，还包括每种实现的十几个方法。但这就是 Spring Data JPA 优秀的地方 —— 不需要编写实现
+
 - 当应用程序启动时，Spring Data JPA 会动态地自动生成一个实现。这意味着 repository 可以从一开始就使用。只需将它们注入到控制器中
 
 - CrudRepository 提供的方法非常适合用于实体的通用持久化
@@ -165,3 +169,67 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
 - dbcTemplate 还可以为了方便执行数据插入，使用 SimpleJdbcInsert。
 
 - Spring Data JPA 使得 JPA 持久化就像编写存储库接口一样简单。
+
+## 第4章 Spring Security
+
+- 提示使用登录页面进行身份验证，而不是使用 HTTP 基本对话框。
+
+- 为多个用户提供注册页面，让新的 Taco Cloud 用户可以注册。
+
+- 为不同的请求路径应用不同的安全规则。例如，主页和注册页面根本不需要身份验证。
+
+### 配置一个能够处理多个用户的用户存储
+
+Spring Security 为配置用户存储提供了几个选项: 
+
+- 一个内存(in-memory)用户存储
+
+- 基于 JDBC 的用户存储
+
+- 由 LDAP 支持的(LDAP-backed)用户存储
+
+- 定制用户详细信息服务(a custom user details service)
+
+通过重写 WebSecurityConfigurerAdapter 配置基类中定义的 configure() 方法来配置你选择的用户存储
+
+### 内存用户存储
+
+- 内存中的用户存储应用于测试或非常简单的应用程序时非常方便，但是它不允许对用户进行简单的编辑。如果需要添加、删除或更改用户，则必须进行必要的更改，然后重新构建、部署应用程序。
+
+- 对于 Taco Cloud 应用程序，由于内存中用户存储的闲置，因此希望客户能够注册应用程序并管理自己的用户帐户，这不能够实现。
+
+### 基于 JDBC 的用户存储
+
+- 用户信息通常在关系数据库中维护，基于 JDBC 的用户存储似乎比较合适
+
+- 重写默认用户查询：Spring Security 内部有在查找用户详细信息时将执行的 SQL 查询，但需要对查询进行更多的控制。在这种情况下，可以配置自己的查询。
+    
+  ```
+    - usersByUsernameQuery(*sql语句) // 身份验证查询
+    
+    - authoritiesByUsernameQuery(*sql语句) // 基本授权查询
+    
+    - groupAuthoritiesByUsername(*sql语句) // 组权限查询
+  ```
+  
+  在将默认 SQL 查询替换为自己设计的查询时，一定要遵守查询的基本约定。它们都以用户名作为唯一参数。身份验证查询选择用户名、密码和启用状态；授权查询选择包含用户名和授予的权限的零个或多个行的数据；组权限查询选择零个或多个行数据，每个行有一个 group id、一个组名和一个权限。
+  
+- 使用编码密码
+
+    - 通过调用 passwordEncoder() 方法指定一个密码编码器
+    
+    - passwordEncoder() 方法接受 Spring Security 的 passwordEncoder 接口的任何实现。Spring Security 的加密模块包括几个这样的实现：
+        
+        - BCryptPasswordEncoder —— 采用 bcrypt 强哈希加密
+        - NoOpPasswordEncoder —— 不应用任何编码
+        - Pbkdf2PasswordEncoder —— 应用 PBKDF2 加密
+        - SCryptPasswordEncoder —— 应用了 scrypt 散列加密
+        - StandardPasswordEncoder —— 应用 SHA-256 散列加密
+        
+    - 用户在登录时输入的密码使用相同的算法进行编码，然后将其与数据库中编码的密码进行比较。比较是在 PasswordEncoder 的 matches() 方法中执行的。
+    
+### 自定义用户身份验证
+
+- 创建表示和持久存储用户信息的域对象和存储库接口(domain object and repository interface)
+
+    - 定义用户实体 User

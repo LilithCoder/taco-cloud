@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import tacocloud.Ingredient;
 import tacocloud.data.IngredientRepository;
 
+import java.util.Optional;
+
 /**
  * 因为表单中的Ingredient都是String类型，而此时没有办法将String类型转化为Ingredient，
  * 需要配置Converter类将Sring转化为Ingredient类，添加IngredientByIdConverter类可解决此问题
@@ -23,7 +25,9 @@ public class IngredientByIdConverter implements Converter<String, Ingredient> {
 
     @Override
     public Ingredient convert(String id) {
-        return ingredientRepo.findOne(id);
+        Optional<Ingredient> optionalIngredient = ingredientRepo.findById(id);
+        return optionalIngredient.isPresent() ?
+                optionalIngredient.get() : null;
     }
 
 }
