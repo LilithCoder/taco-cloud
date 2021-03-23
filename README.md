@@ -130,6 +130,8 @@ showDesignForm() 方法的第 2 行现在调用了注入的 IngredientRepository
     
 ## 第3.2章 使用 Spring Data JPA 持久化数据
 
+Spring Data JPA帮你做了一切，包括了常见api的实现，数据库schema的实现，全部自动化完成
+
 ![](pic/flow_chart_v3.png)
 
 ### 注解域作为实体

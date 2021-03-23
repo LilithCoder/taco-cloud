@@ -68,6 +68,7 @@ public class DesignTacoController {
         List<Ingredient> ingredients = new ArrayList<>();
         ingredientRepo.findAll().forEach(i -> ingredients.add(i));
         Type[] types = Ingredient.Type.values();
+        System.out.println("ingredients: " + ingredients.toString());
         for (Type type: types) {
             model.addAttribute(type.toString().toLowerCase(),
                     filterByType(ingredients, type));
