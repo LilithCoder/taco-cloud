@@ -232,6 +232,22 @@ Spring Security 为配置用户存储提供了几个选项:
     
 ### 自定义用户身份验证
 
-- 创建表示和持久存储用户信息的域对象和存储库接口(domain object and repository interface)
+- 创建表示和持久存储用户信息的域对象
 
-    - 定义用户实体 User
+    - 定义用户实体 User: 用户名和密码、全名、地址和电话号码
+    
+    - 这里的 User 类实现了 UserDetails 接口，向框架提供一些基本的用户信息，比如授予用户什么权限以及用户的帐户是否启用
+    
+    - getAuthorities() 方法应该返回授予用户的权限集合。各种 isXXXexpired() 方法返回一个布尔值，指示用户的帐户是否已启用或过期。
+    
+    - 现在，Taco Cloud 还不需要禁用用户，所以所有的 isXXXexpired() 方法都返回 true 来表示用户处于活动状态
+    
+- 自定义 User JPA repository 存储库接口
+    
+    - 除了 CrudRepository 提供的基本 CRUD 操作之外，还可以自定义 JPA repository，在生成 repository 实现时，Spring Data 检查存储库接口中的任何方法，解析方法名称，并尝试在持久化对象的上下文中理解方法的用途。本质上，Spring Data 定义了一种小型的领域特定语言（DSL），其中持久化细节用 repository 中的方法签名表示。
+    
+    - 除了通过扩展 CrudRepository 提供的 CRUD 操作之外，UserRepository 还定义了一个 findByUsername() 方法，将在用户详细信息服务中使用该方法根据用户名查找 User。
+    
+- 编写使用此存储库的自定义用户详细信息服务
+
+    - 
