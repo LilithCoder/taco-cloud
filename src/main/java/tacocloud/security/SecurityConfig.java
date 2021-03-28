@@ -1,3 +1,42 @@
+package tacocloud.security;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
+
+/**
+ * 需要使用 Spring Security 配置custom user details service
+ */
+@SuppressWarnings("deprecation")
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    /**
+     * 配置密码编码器，以便可以在数据库中对密码进行编码。为此，首先声明一个 PasswordEncoder 类型的bean
+     * 然后通过调用 PasswordEncoder() 将其注入到用户详细信息服务配置中
+     * */
+    @Bean
+    public PasswordEncoder encoder() {
+        return new StandardPasswordEncoder("53cr3t");
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(encoder());
+    }
+}
+
 //package tacocloud.security;
 //
 //import org.springframework.beans.factory.annotation.Autowired;

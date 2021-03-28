@@ -10,5 +10,5 @@ public interface UserRepository extends CrudRepository<User, Long> {
      * 将在用户详细信息服务中使用该方法根据用户名查找 User。
      * Spring Data JPA 将在运行时自动生成该接口的实现
      * */
-    User findByUserName(String username);
+    User findByUsername(String username);
 }

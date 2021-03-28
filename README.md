@@ -250,4 +250,22 @@ Spring Security 为配置用户存储提供了几个选项:
     
 - 编写使用此存储库的自定义用户详细信息服务
 
-    - 
+    - 由于 User 类实现了 UserDetails，同时 UserRepository 提供了一个 findByUsername() 方法，因此它们非常适合在自定义 UserDetailsService 实现中使用
+    
+    - UserRepositoryUserDetailsService 通过 UserRepository 实例的构造器进行注入。然后，在它的 loadByUsername() 方法中，它调用 UserRepository 中的 findByUsername() 方法去查找 User
+    
+    - 仍然需要使用 Spring Security 配置自定义用户详细信息服务，只需调用 userDetailsService() 方法，将自动生成的 userDetailsService 实例传递给 SecurityConfig
+    
+    - 配置密码编码器，以便可以在数据库中对密码进行编码。为此，首先声明一个 PasswordEncoder 类型的bean，然后通过调用 PasswordEncoder() 将其注入到用户详细信息服务配置中
+    
+- 用户注册
+
+    - RegistrationController 类展示并处理注册表单
+    
+    - registerForm() 方法将处理 /register 的 GET 请求，它只返回注册的逻辑视图名
+    
+    - 提交表单时，HTTP POST 请求将由 processRegistration() 方法处理。processRegistration() 的 RegistrationForm 对象绑定到请求数据
+    
+    - RegistrationForm 只是一个支持 Lombok 的基本类，只有少量属性。但是 toUser() 方法使用这些属性创建一个新的 User 对象，processRegistration() 将使用注入的 UserRepository 保存这个对象
+    
+    - RegistrationController 被注入了一个密码编码器。这与之前声明的 PasswordEncoder bean 完全相同
